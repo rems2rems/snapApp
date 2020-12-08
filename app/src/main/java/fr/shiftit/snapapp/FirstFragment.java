@@ -40,41 +40,15 @@ public class FirstFragment extends Fragment {
         view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
-                OkHttpClient client = new OkHttpClient();
 
-                Request request = new Request.Builder()
-                        .url("http://10.0.2.2:3000/api/v1/users")
-                        .build();
+                Gson gson = new Gson();
+                User user = gson.fromJson("{\"name\":\"joe\",\"id\":\"a761E4\"}",User.class);
+                textView.setText(user.getName());
 
-                try  {
-                    //Response response = client.newCall(request).execute();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            e.printStackTrace();
-                            Log.e("mylogs",e.getMessage());
-                            Log.e("mylogs","exception",e);
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String result = response.body().string();
-                            Log.i("mylogs",result);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    textView.setText(result);
-                                }
-                            });
-                            Log.i("mylogs","ok");
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("mylogs",e.getMessage());
-                    Log.e("mylogs","exception",e);
-                }
+                User user2 = new User();
+                user2.setId("8FF6wQ");
+                user2.setName("remy");
+                textView.setText(gson.toJson(user2));
 
 
                 //NavHostFragment.findNavController(FirstFragment.this)
