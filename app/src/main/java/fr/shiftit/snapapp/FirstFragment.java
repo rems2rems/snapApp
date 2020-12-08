@@ -39,15 +39,14 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        UsersService usersService = new UsersServiceBuilder()
+                .setUrl("http://10.0.2.2:3000/api/v1/")
+                .build();
 
         TextView textView = (TextView)view.findViewById(R.id.textview_first);
-        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.button_read).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                UsersService usersService = new UsersServiceBuilder()
-                        .setUrl("http://10.0.2.2:3000/api/v1/")
-                        .build();
 
                 try  {
                     //Response response = client.newCall(request).execute();
@@ -70,6 +69,44 @@ public class FirstFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<List<User>> call, Throwable t) {
+
+                            t.printStackTrace();
+                            Log.e("mylogs", t.getMessage());
+                            Log.e("mylogs", "exception", t);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("mylogs",e.getMessage());
+                    Log.e("mylogs","exception",e);
+                }
+            }
+        });
+
+        view.findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try  {
+                    //Response response = client.newCall(request).execute();
+                    User user = new User();
+                    user.setName("houra");
+                    usersService.createUser(user).enqueue(new Callback<ApiId>() {
+
+                        @Override
+                        public void onResponse(Call<ApiId> call, Response<ApiId> response) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    user.setId(response.body().getId());
+                                    textView.setText("nouvel user créé! (id:" + user.getId()+")");
+                                }
+                            });
+                            Log.i("mylogs","ok");
+                        }
+
+                        @Override
+                        public void onFailure(Call<ApiId> call, Throwable t) {
 
                             t.printStackTrace();
                             Log.e("mylogs", t.getMessage());

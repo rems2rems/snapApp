@@ -21,7 +21,7 @@ public interface UsersService {
     Call<User> getUser(@Path("id") String id);
 
     @POST("users")
-    Call<Integer> createUser(@Body User user);
+    Call<ApiId> createUser(@Body User user);
 
     @PUT("users/:id")
     Call<Void> updateUser(@Path("id") String id,@Body User user);
