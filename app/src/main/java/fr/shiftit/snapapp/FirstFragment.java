@@ -13,8 +13,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,7 +47,7 @@ public class FirstFragment extends Fragment {
 
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
-                        .url("http://10.0.2.2:3000/api/v1/users/8h8cv9")
+                        .url("http://10.0.2.2:3000/api/v1/users")
                         .build();
                 try  {
                     //Response response = client.newCall(request).execute();
@@ -61,8 +65,13 @@ public class FirstFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     Gson gson = new Gson();
-                                    User user = gson.fromJson(data,User.class);
-                                    textView.setText("User: " + user.getName() + " (id:" + user.getId() + ")");
+                                    Type usersType = new TypeToken<List<User>>(){}.getType();
+                                    List<User> users = gson.fromJson(data,usersType);
+                                    String msg = "Users:\n";
+                                    for(User user : users) {
+                                        msg += user.getName() + " (id:" + user.getId() + ")\n";
+                                    }
+                                    textView.setText(msg);
                                 }
                             });
                             Log.i("mylogs","ok");
