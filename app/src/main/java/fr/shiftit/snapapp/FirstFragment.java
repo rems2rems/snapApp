@@ -20,11 +20,11 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FirstFragment extends Fragment {
 
@@ -45,36 +45,35 @@ public class FirstFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url("http://10.0.2.2:3000/api/v1/users")
+                UsersService usersService = new UsersServiceBuilder()
+                        .setUrl("http://10.0.2.2:3000/api/v1/")
                         .build();
+
                 try  {
                     //Response response = client.newCall(request).execute();
-                    client.newCall(request).enqueue(new Callback() {
+                    usersService.getUsers().enqueue(new Callback<List<User>>() {
+
                         @Override
-                        public void onFailure(Call call, IOException e) {
-                            e.printStackTrace();
-                            Log.e("mylogs",e.getMessage());
-                            Log.e("mylogs","exception",e);
-                        }
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String data = response.body().string();
+                        public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Gson gson = new Gson();
-                                    Type usersType = new TypeToken<List<User>>(){}.getType();
-                                    List<User> users = gson.fromJson(data,usersType);
                                     String msg = "Users:\n";
-                                    for(User user : users) {
+                                    for(User user : response.body()) {
                                         msg += user.getName() + " (id:" + user.getId() + ")\n";
                                     }
                                     textView.setText(msg);
                                 }
                             });
                             Log.i("mylogs","ok");
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<User>> call, Throwable t) {
+
+                            t.printStackTrace();
+                            Log.e("mylogs", t.getMessage());
+                            Log.e("mylogs", "exception", t);
                         }
                     });
                 } catch (Exception e) {
