@@ -1,6 +1,7 @@
 package fr.shiftit.snapapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,31 @@ public class SecondFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+//        //retour
+//        Intent returnIntent = new Intent();
+//        returnIntent.putExtra("result",result);
+//        setResult(Activity.RESULT_OK,returnIntent);
+//        finish();
+//
+//        //uri -> image
+//        Uri selectedImage = imageUri;
+//        getContentResolver().notifyChange(selectedImage, null);
+//        ImageView imageView = (ImageView) findViewById(R.id.ImageView);
+//        ContentResolver cr = getContentResolver();
+//        Bitmap bitmap;
+//        try {
+//            bitmap = android.provider.MediaStore.Images.Media
+//                    .getBitmap(cr, selectedImage);
+//
+//            imageView.setImageBitmap(bitmap);
+//            Toast.makeText(this, selectedImage.toString(),
+//                    Toast.LENGTH_LONG).show();
+//        } catch (Exception e) {
+//            Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
+//                    .show();
+//            Log.e("Camera", e.toString());
+//        }
 
         view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
             @Override
