@@ -1,4 +1,4 @@
-package fr.shiftit.snapapp;
+package fr.shiftit.snapapp.model;
 
 public class User {
 

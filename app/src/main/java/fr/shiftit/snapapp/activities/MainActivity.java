@@ -1,4 +1,4 @@
-package fr.shiftit.snapapp;
+package fr.shiftit.snapapp.activities;
 
 import android.os.Bundle;
 
@@ -17,6 +17,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.view.Menu;
 import android.view.MenuItem;
+
+import fr.shiftit.snapapp.R;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,21 +1,21 @@
-package fr.shiftit.snapapp;
+package fr.shiftit.snapapp.services;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class UsersServiceBuilder {
+public class SnapsServiceBuilder {
 
     private static Retrofit retrofit = null;
     private String url;
 
-    public UsersServiceBuilder setUrl(String url) {
+    public SnapsServiceBuilder setUrl(String url) {
         this.url = url;
         return this;
     }
 
-    UsersService build() {
+    public SnapsService build() {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -27,6 +27,6 @@ public class UsersServiceBuilder {
                 .client(client)
                 .build();
 
-        return retrofit.create(UsersService.class);
+        return retrofit.create(SnapsService.class);
     }
 }

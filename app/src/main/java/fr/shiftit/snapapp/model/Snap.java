@@ -1,11 +1,15 @@
-package fr.shiftit.snapapp;
+package fr.shiftit.snapapp.model;
 
 import android.graphics.Bitmap;
-import android.media.Image;
+
+import fr.shiftit.snapapp.util.ImageToText;
 
 public class Snap {
 
-    private Bitmap image;
+    private transient String albumId;
+    private transient String userId;
+
+    private transient Bitmap image;
 
     /**
      * pour serialisation/deserialisation vers/depuis l'api nodejs
@@ -18,12 +22,29 @@ public class Snap {
     public Snap() {
     }
 
+    public String getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(String albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public Bitmap getImage() {
         return image;
     }
 
     public void setImage(Bitmap image) {
         this.image = image;
+        this.imageData = ImageToText.convertToString(image);
     }
 
     public String getImageData() {
@@ -32,6 +53,7 @@ public class Snap {
 
     public void setImageData(String imageData) {
         this.imageData = imageData;
+        this.image = ImageToText.convertToBitmap(imageData);
     }
 
     public String getDescription() {

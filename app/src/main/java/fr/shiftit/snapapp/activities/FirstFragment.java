@@ -1,13 +1,11 @@
-package fr.shiftit.snapapp;
+package fr.shiftit.snapapp.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +22,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import fr.shiftit.snapapp.util.ImageToText;
+import fr.shiftit.snapapp.R;
+import fr.shiftit.snapapp.services.SnapsService;
+import fr.shiftit.snapapp.services.SnapsServiceBuilder;
+import fr.shiftit.snapapp.model.ApiId;
+import fr.shiftit.snapapp.model.Snap;
+import fr.shiftit.snapapp.model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,7 +37,9 @@ public class FirstFragment extends Fragment {
 
     private static final int TAKE_PICTURE = 111; //nombre random
     private Snap currentSnap;
-    private String currentPhoto;
+    private String currentPhotoFile;
+
+    SnapsService snapsService;
 
     @Override
     public View onCreateView(
@@ -48,7 +55,7 @@ public class FirstFragment extends Fragment {
 
         currentSnap = null;
 
-        UsersService usersService = new UsersServiceBuilder()
+        snapsService = new SnapsServiceBuilder()
                 .setUrl("http://10.0.2.2:3000/api/v1/")
                 .build();
 
@@ -57,7 +64,7 @@ public class FirstFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                refreshUsers(usersService, textView);
+                refreshUsers(snapsService, textView);
             }
         });
 
@@ -85,7 +92,7 @@ public class FirstFragment extends Fragment {
             );
 
             // Save a file: path for use with ACTION_VIEW intents
-            currentPhoto = tmpFile.getAbsolutePath();
+            currentPhotoFile = tmpFile.getAbsolutePath();
 
             Uri photoURI = FileProvider.getUriForFile(getActivity(),
                     "fr.shiftit.snapapp",
@@ -100,7 +107,39 @@ public class FirstFragment extends Fragment {
         }
     }
 
-    private void refreshUsers(UsersService usersService, TextView textView) {
+    private void postSnap(Snap snap, TextView textView) {
+        try {
+            //Response response = client.newCall(request).execute();
+            snapsService.createSnap(snap.getUserId(), snap.getAlbumId(), snap).enqueue(new Callback<ApiId>() {
+
+                @Override
+                public void onResponse(Call<ApiId> call, Response<ApiId> response) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String msg = "Id:" + response.body().getId();
+                            textView.setText(msg);
+                        }
+                    });
+                    Log.i("mylogs", "snap sent");
+                }
+
+                @Override
+                public void onFailure(Call<ApiId> call, Throwable t) {
+
+                    t.printStackTrace();
+                    Log.e("mylogs", t.getMessage());
+                    Log.e("mylogs", "exception", t);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("mylogs", e.getMessage());
+            Log.e("mylogs", "exception", e);
+        }
+    }
+
+    private void refreshUsers(SnapsService usersService, TextView textView) {
         try {
             //Response response = client.newCall(request).execute();
             usersService.getUsers().enqueue(new Callback<List<User>>() {
@@ -143,12 +182,21 @@ public class FirstFragment extends Fragment {
 //            Bitmap miniature = (Bitmap) data.getExtras().get("data");
 
             BitmapFactory.Options options = new BitmapFactory.Options();
-            Bitmap fulSizeSnap = BitmapFactory.decodeFile(currentPhoto,options);
+            Bitmap fullSizePhoto = BitmapFactory.decodeFile(currentPhotoFile,options);
 
             ImageView photoView = getActivity().findViewById(R.id.photo);
-            photoView.setImageBitmap(fulSizeSnap);
-            Log.i("mylogs","taille:"+options.outWidth);
-//            addPhotoToSnap(currentSnap,fulSizeSnap);
+            photoView.setImageBitmap(fullSizePhoto);
+
+
+            currentSnap = new Snap();
+            currentSnap.setUserId("8h8cv9");
+            currentSnap.setAlbumId("nHya2t");
+            currentSnap.setImage(fullSizePhoto);
+            Log.i("mylogs","base64 photo:" + currentSnap.getImageData());
+
+            TextView textView = getActivity().findViewById(R.id.textview_first);
+            postSnap(currentSnap,textView);
+//            addPhotoToSnap(currentSnap,fullSizePhoto);
             //frag2 + photo
         }
     }
